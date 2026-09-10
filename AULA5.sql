@@ -103,3 +103,115 @@ GO
 SELECT * FROM FUNCIONARIOS
 WHERE Sexo != 'M';
 GO
+
+-- utiliza os operadores >=, AND e <= para exibir os registros dos funcionarios cujo salário esteja entre 1000 e 1800 reais
+SELECT * FROM FUNCIONARIOS
+WHERE Salario >= 1000 AND
+      Salario <= 1100;
+GO
+
+-- Uso do operador BETWEEN
+SELECT * FROM FUNCIONARIOS
+WHERE Salario BETWEEN 1000 AND 1100;
+GO
+
+-- Operador IS NULL, exibe campos nulls
+SELECT * FROM FUNCIONARIOS
+WHERE Telefone IS NULL;
+GO
+
+-- Opedador EXISTS, para verificar se existe algum funcinário que recebe acima de R$ 2000
+IF EXISTS (
+    SELECT * FROM FUNCIONARIOS
+    WHERE Salario > 2000
+)
+    PRINT 'Alguém recebe acima de R$ 2000,00';
+ELSE
+    PRINT 'Ninguém recebe acima de R$ 2000,00';
+GO
+
+-- Operador IN, Utiliza o operador OR, para exibir os registros dos funcionarios cujo ID seja 1 ou 2 ou 5.
+SELECT * FROM FUNCIONARIOS
+WHERE ID = 1 OR
+      ID = 2 OR
+      ID = 5;
+GO
+
+-- Operador IN
+SELECT * FROM FUNCIONARIOS
+WHERE ID IN (1,2,5);
+GO
+
+-- Utiliza uma subconsulta, para retornar os valores da cláusula IN.
+SELECT * FROM FUNCIONARIOS
+WHERE Salario IN (
+    SELECT Salario
+    FROM FUNCIONARIOS
+    WHERE Salario > 2000.00
+);
+GO
+
+-- Operador LIKE, Exibe os registros de todos os funcionarios cujo nome comece com a letra M
+SELECT * FROM FUNCIONARIOS
+WHERE UPPER(Nome) LIKE '%Gaucho'
+ORDER BY Nome;
+GO
+
+-- Operador LIKE, Exibe os registros de todos os funcionarios cujo nome nao comece com a letra 'M'. Ordena o resultado de acordo com o nome
+SELECT * FROM FUNCIONARIOS
+WHERE Nome LIKE '[^M]%'
+ORDER BY Nome;
+GO
+
+-- Criando uma VIEW, Cria uma view que exibe algumas informações dos funcionarios, utilizando aliases para algumas colunas
+CREATE VIEW MaioresSalarios AS
+    SELECT ID AS 'Código do Funcionario',
+           Nome,
+           Sexo,
+           Salario AS 'Salário'
+    FROM FUNCIONARIOS;
+GO
+
+-- Exemplos de utlização da VIEW MaioresSalarios
+SELECT * FROM MaioresSalarios
+GO
+
+SELECT [Código do Funcionario],
+       Nome,
+       Salário
+FROM MaioresSalarios;
+GO
+
+-- Alterando uma VIEW, Exemplo de atualização da view MaioresSalarios
+ALTER VIEW MaioresSalarios AS
+    SELECT ID AS 'Código do Funcionario',
+           Nome,
+           Sexo AS 'Sexo do Funcionario',
+           Salario AS 'Salário'
+    FROM FUNCIONARIOS
+    ORDER BY Salario DESC
+    OFFSET 0 ROWS;
+GO
+
+-- Utilizando uma VIEW, Exemplo de utilização da VIEW MaioresSalarios
+-- Exibe somente os registros cujo o salario esteja acima de R$ 1500,00
+SELECT [Código do funcionario],
+       Nome,
+       "Sexo do Funcionario",
+       Salário
+FROM MaioresSalarios
+WHERE Salário > 1500;
+GO
+
+-- Exibindo informacoes sobre as VIEWS
+EXEC sp_helptext MaioresSalarios;
+GO
+
+SELECT TABLE_NAME      AS 'Nome da View',
+       VIEW_DEFINITION AS 'Código SQL'
+FROM INFORMATION_SCHEMA.Views;
+GO
+
+-- Exclui a view MaioresSalarios
+DROP VIEW MaioresSalarios
+GO
